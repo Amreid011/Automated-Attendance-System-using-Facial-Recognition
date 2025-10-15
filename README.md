@@ -4,7 +4,7 @@
 Faculty of Computers and Artificial Intelligence
 Computer Science & Artificial Intelligence & Information Technology Departments
 
-![System Demo GIF](assets/images/demo.gif)
+![System Demo](55.png)
 
 ---
 
