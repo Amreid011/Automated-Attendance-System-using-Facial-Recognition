@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white !important;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-1px);
+        }
+        .container-fluid {
+            padding: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            border-top-left-radius: 15px !important;
+            border-top-right-radius: 15px !important;
+            padding: 1rem 1.5rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .btn-action {
+            padding: 1rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            border: none;
+        }
+        .btn-action i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .btn-attendance {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            color: #495057;
+            font-weight: 600;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+        .text-green {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .text-yellow {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        .text-red {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .stats-title {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .stats-value {
+            color: #2d3748;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .alert {
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-user-graduate mr-2"></i>
+            Student Attendance System
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <!-- Quick Stats -->
+            <div class="col-md-12 mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <p class="stats-title">Total Students</p>
+                            <p class="stats-value">{{ metrics|length }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <p class="stats-title">Present Today</p>
+                            <p class="stats-value">{{ metrics|selectattr('Days Attended', '>', 0)|list|length }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <p class="stats-title">Absent Today</p>
+                            <p class="stats-value">{{ metrics|selectattr('Days Absent', '>', 0)|list|length }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <p class="stats-title">Attendance Rate</p>
+                            <p class="stats-value">
+                                {% set total = metrics|length %}
+                                {% set present = metrics|selectattr('Days Attended', '>', 0)|list|length %}
+                                {% if total > 0 %}
+                                    {{ ((present / total) * 100)|round|int }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Student Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user-plus mr-2"></i> Add New Student
+                    </div>
+                    <div class="card-body">
+                        <form action="/add" method="post">
+                            <div class="form-group">
+                                <label for="id">Student ID</label>
+                                <input type="number" class="form-control" id="id" name="id" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Student Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="department">Department</label>
+                                <input type="text" class="form-control" id="department" name="department" required>
+                            </div>
+                            <button type="submit" class="btn btn-action btn-attendance">
+                                <i class="fas fa-user-plus"></i> Add Student
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Actions Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-tasks mr-2"></i> Attendance Actions
+                    </div>
+                    <div class="card-body">
+                        <a href="/face_attend" class="btn btn-action btn-attendance">
+                            <i class="fas fa-user-check"></i> Mark Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students to Watch Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-exclamation-triangle mr-2"></i> Students to Watch
+                    </div>
+                    <div class="card-body">
+                        {% set students_to_watch = metrics | selectattr('Days Absent', '>', 2) | list %}
+                        {% if students_to_watch %}
+                            <div class="list-group">
+                                {% for student in students_to_watch %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ student['Name'] }}</h6>
+                                            <small class="text-danger">{{ student['Days Absent'] }} absences</small>
+                                        </div>
+                                        <small class="text-muted">ID: {{ student['ID'] }}</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-success mb-0">
+                                <i class="fas fa-check-circle mr-2"></i> No students with excessive absences
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Metrics Table -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-table mr-2"></i> Student Attendance Metrics
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Days Attended</th>
+                                <th>Days Absent</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for metric in metrics %}
+                            <tr>
+                                <td>{{ metric['ID'] }}</td>
+                                <td>{{ metric['Name'] }}</td>
+                                <td>{{ metric['Department'] }}</td>
+                                <td>{{ metric['Days Attended'] }}</td>
+                                <td>{{ metric['Days Absent'] }}</td>
+                                <td>
+                                    {% if metric['Color Class'] == 'red' %}
+                                        <span class="badge badge-danger">Poor</span>
+                                    {% elif metric['Color Class'] == 'yellow' %}
+                                        <span class="badge badge-warning">Warning</span>
+                                    {% else %}
+                                        <span class="badge badge-success">Good</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2023 Student Attendance System. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
